@@ -22,4 +22,3 @@ form.setupUi(window)
 window.show()
 app.exec_()
 
-print("dsadsa")
