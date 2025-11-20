@@ -80,17 +80,43 @@ padding: 20px;</string>
          </layout>
         </widget>
        </widget>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QToolButton" name="toolButton">
         <property name="geometry">
          <rect>
-          <x>220</x>
-          <y>280</y>
-          <width>251</width>
-          <height>231</height>
+          <x>90</x>
+          <y>70</y>
+          <width>161</width>
+          <height>91</height>
          </rect>
         </property>
         <property name="text">
-         <string>PushButton</string>
+         <string>...</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox">
+        <property name="geometry">
+         <rect>
+          <x>50</x>
+          <y>280</y>
+          <width>301</width>
+          <height>151</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>CheckBox</string>
+        </property>
+       </widget>
+       <widget class="QCommandLinkButton" name="commandLinkButton">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>560</y>
+          <width>185</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>CommandLinkButton</string>
         </property>
        </widget>
       </widget>
