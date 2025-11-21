@@ -21,13 +21,14 @@ operation = "SWCR creator"
 filePath = "value"
 savePath = "value"
 textPath = []
+log = []
+
 
 class MyApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         self.ui.comboBox.currentTextChanged.connect(self.comboBoxFunc)
         self.ui.pushButton.clicked.connect(self.openFileDialog)
         self.ui.pushButton_2.clicked.connect(self.openFileDialog2)
@@ -47,6 +48,10 @@ class MyApp(QMainWindow):
                 textPath = curFilePath[:]
                 txtToSwct.PathList = textPath
                 self.ui.pushButton.setText(f"{dir.parent}")
+                L = "\n".join(textPath)
+                log.append("Добавлены файлы:")
+                log.append(f"{L}")
+                self.logger(log)
                 
 
     def openFileDialog2(self):
@@ -55,8 +60,16 @@ class MyApp(QMainWindow):
         if len(curFilePath) > 2:
             savePath = curFilePath
             self.ui.pushButton_2.setText(savePath)
+            log.append(f"Добавлена директория для сохранения документа: \n{savePath}")
+            self.logger(log)
+            
 
 
+    def logger(self, log):
+        for i in log:
+            str(i)
+        log = "\n".join(log)
+        self.ui.textEdit.setText(log)
 
 
 
