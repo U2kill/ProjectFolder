@@ -5,16 +5,17 @@ import re
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
 
+
+
 # --- настройки ---
+singPath = "value"
 XL_PATH_IN = Path("SWCTmacross.xlsm")
-XL_PATH_OUT = Path("SWCT Светильник BOX.xlsm")  # сохраняем как .xlsm, чтобы не потерять VBA
+XL_PATH_OUT = Path(singPath)  # сохраняем как .xlsm, чтобы не потерять VBA
 SHEET_IDX   = 0
 START_ROW   = 9        # начинаем всегда с 9-й строки
 SHIFT_COLS  = 8        # сдвиг вправо на 7 колонок (B/C/D -> I/J/K)
-#eqw
+
 PathList = []
-a=1
-b=2
 
 
 def to_float(s: str):
@@ -39,7 +40,7 @@ def collect_numbered_txt_files():
     """
     out = []
     rx = re.compile(r'^(\d+)\.\s*(.+)\.txt$', re.IGNORECASE)
-    for p in Path(".").iterdir():
+    for p in PathList:
         if not p.is_file() or p.suffix.lower() != ".txt":
             continue
         m = rx.match(p.name)

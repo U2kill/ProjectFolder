@@ -74,6 +74,7 @@ class MyApp(QMainWindow):
             self.ui.pushButton_2.setText(savePath)
             log.append(f"Добавлена директория для сохранения документа: \n{savePath}")
             self.logger(log)
+            txtToSwct.singPath = savePath
             
 
 
