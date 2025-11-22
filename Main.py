@@ -29,12 +29,24 @@ class MyApp(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # self.ui.lineEdit.setEnabled(False)
+        # self.ui.pushButton_4.setEnabled(False)
+        
         self.ui.comboBox.currentTextChanged.connect(self.comboBoxFunc)
         self.ui.pushButton.clicked.connect(self.openFileDialog)
         self.ui.pushButton_2.clicked.connect(self.openFileDialog2)
-
+        
 
     def comboBoxFunc(self, text):
+        if self.ui.comboBox.currentText() == "SWCT Creator":
+            self.ui.lineEdit.show()
+            self.ui.pushButton_4.show()
+            
+        else:
+            self.ui.lineEdit.hide()
+            self.ui.pushButton_4.hide()
+
         global operation
         operation = text
 

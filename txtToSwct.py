@@ -6,11 +6,13 @@ import math
 from openpyxl.utils import get_column_letter, column_index_from_string
 
 # --- настройки ---
-XL_PATH_IN = Path("/content/drive/MyDrive/Yamazumi/SWCTmacross.xlsm")
+XL_PATH_IN = Path("SWCTmacross.xlsm")
 XL_PATH_OUT = Path("SWCT Светильник BOX.xlsm")  # сохраняем как .xlsm, чтобы не потерять VBA
 SHEET_IDX   = 0
 START_ROW   = 9        # начинаем всегда с 9-й строки
 SHIFT_COLS  = 8        # сдвиг вправо на 7 колонок (B/C/D -> I/J/K)
+
+
 
 def to_float(s: str):
     """Пробуем преобразовать в float и округлить вверх до целого."""
