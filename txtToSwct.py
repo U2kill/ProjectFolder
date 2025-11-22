@@ -11,7 +11,10 @@ XL_PATH_OUT = Path("SWCT Светильник BOX.xlsm")  # сохраняем �
 SHEET_IDX   = 0
 START_ROW   = 9        # начинаем всегда с 9-й строки
 SHIFT_COLS  = 8        # сдвиг вправо на 7 колонок (B/C/D -> I/J/K)
-
+#eqw
+PathList = []
+a=1
+b=2
 
 
 def to_float(s: str):
