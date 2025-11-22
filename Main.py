@@ -8,7 +8,7 @@
 # form.setupUi(window)
 # window.show()
 # app.exec_()
-
+#
 from pathlib import Path
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -22,7 +22,7 @@ filePath = "value"
 savePath = "value"
 textPath = []
 log = []
-
+SWCTname = "Value"
 
 class MyApp(QMainWindow):
     def __init__(self):
@@ -30,19 +30,18 @@ class MyApp(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        # self.ui.lineEdit.setEnabled(False)
-        # self.ui.pushButton_4.setEnabled(False)
         
         self.ui.comboBox.currentTextChanged.connect(self.comboBoxFunc)
         self.ui.pushButton.clicked.connect(self.openFileDialog)
         self.ui.pushButton_2.clicked.connect(self.openFileDialog2)
+        self.ui.pushButton_4.clicked.connect(self.saveName)
+        self.ui.pushButton_3.clicked.connect(self.startSWCT)
         
 
     def comboBoxFunc(self, text):
         if self.ui.comboBox.currentText() == "SWCT Creator":
             self.ui.lineEdit.show()
-            self.ui.pushButton_4.show()
-            
+            self.ui.pushButton_4.show()           
         else:
             self.ui.lineEdit.hide()
             self.ui.pushButton_4.hide()
@@ -74,7 +73,7 @@ class MyApp(QMainWindow):
             self.ui.pushButton_2.setText(savePath)
             log.append(f"Добавлена директория для сохранения документа: \n{savePath}")
             self.logger(log)
-            txtToSwct.singPath = savePath
+            # txtToSwct.savePath = savePath
             
 
 
@@ -84,8 +83,20 @@ class MyApp(QMainWindow):
         log = "\n".join(log)
         self.ui.textEdit.setText(log)
 
+    def saveName(self):
+        global SWCTname
+        SWCTname = self.ui.lineEdit.text()
+        log.append(f"Добавлено имя файла: \n{SWCTname}")
+        self.logger(log)
+        # txtToSwct.SWCTname = SWCTname
 
+    def startSWCT(self):
+        print(SWCTname)
+        print(savePath)
+        # print(f"{txtToSwct.SWCTname }")
+        txtToSwct.main()
 
+    
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyApp()

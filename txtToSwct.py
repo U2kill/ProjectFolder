@@ -4,13 +4,14 @@ from pathlib import Path
 import re
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
-
+from Main import savePath
+from Main import SWCTname
 
 
 # --- настройки ---
-singPath = "value"
+
 XL_PATH_IN = Path("SWCTmacross.xlsm")
-XL_PATH_OUT = Path(singPath)  # сохраняем как .xlsm, чтобы не потерять VBA
+XL_PATH_OUT = Path(f"{SWCTname}.xlsm")  # сохраняем как .xlsm, чтобы не потерять VBA
 SHEET_IDX   = 0
 START_ROW   = 9        # начинаем всегда с 9-й строки
 SHIFT_COLS  = 8        # сдвиг вправо на 7 колонок (B/C/D -> I/J/K)
@@ -40,14 +41,18 @@ def collect_numbered_txt_files():
     """
     out = []
     rx = re.compile(r'^(\d+)\.\s*(.+)\.txt$', re.IGNORECASE)
+
+
+    ################################### PROBLEM!!!!!!!!!!!
     for p in PathList:
-        if not p.is_file() or p.suffix.lower() != ".txt":
+        if not Path(p).is_file() or Path(p).suffix.lower() != ".txt":
             continue
-        m = rx.match(p.name)
+        m = rx.match(Path(p).name)
         if m:
             num = int(m.group(1))
-            out.append((num, p))
+            out.append((num, Path(p)))
     # сортируем по числовому префиксу
+    p = Path(p)
     return [p for _, p in sorted(out, key=lambda t: t[0])]
 
 def first_empty_row(ws, col_letter: str, start_row: int) -> int:
@@ -58,6 +63,8 @@ def first_empty_row(ws, col_letter: str, start_row: int) -> int:
     return row
 
 def main():
+
+    
     if XL_PATH_OUT.suffix.lower() != ".xlsm":
         raise ValueError("Для сохранения макросов укажи выходной файл с расширением .xlsm.")
 
@@ -111,4 +118,4 @@ def main():
         total += len(rows)
 
     wb.save(XL_PATH_OUT)
-    print(f"Готово. Всего добавлено строк: {total}. Сохранено в: {XL_PATH_OUT}")
+    print(f"{SWCTname} Готово. Всего добавлено строк: {total}. Сохранено в: {XL_PATH_OUT}")
