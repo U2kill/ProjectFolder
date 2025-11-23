@@ -7,6 +7,9 @@ from PyQt5.QtWidgets import QFileDialog
 import txtToSwct
 from SWCT import Text
 
+
+
+
 operation = "SWCR creator"
 filePath = "value"
 savePath = "value"
@@ -24,7 +27,8 @@ class MyApp(QMainWindow):
         self.ui.comboBox.currentTextChanged.connect(self.comboBoxFunc)
         self.ui.pushButton.clicked.connect(self.openFileDialog)
         self.ui.pushButton_2.clicked.connect(self.openFileDialog2)
-        self.ui.pushButton_4.clicked.connect(self.saveName)
+        self.ui.lineEdit.editingFinished.connect(self.saveName)
+        # self.ui.pushButton_4.clicked.connect(self.saveName)
         self.ui.pushButton_3.clicked.connect(self.startSWCT)
         
 
@@ -74,7 +78,7 @@ class MyApp(QMainWindow):
 
     def saveName(self):
         global SWCTname
-        SWCTname = f"{self.ui.lineEdit.text()}.xlsm"
+        SWCTname = f"{self.ui.lineEdit.text().strip()}.xlsm"
         print(SWCTname)
         log.append(f"Добавлено имя файла: \n{SWCTname}")
         self.logger(log)
@@ -83,6 +87,7 @@ class MyApp(QMainWindow):
     def startSWCT(self):
 
         result = Text()
+        # asyncio.run(result.main(textPath, SWCTname, savePath))
         result.main(textPath, SWCTname, savePath)
 
     

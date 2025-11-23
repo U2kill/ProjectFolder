@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
+# import asyncio
 # from Main import savePath
 # from Main import SWCTname
 
@@ -51,6 +52,7 @@ class Text:
         # сортируем по числовому префиксу
         p = Path(p)
 
+
         return [p for _, p in sorted(self.out, key=lambda t: t[0])]
     
     def first_empty_row(self, ws, col_letter: str) -> int:
@@ -65,7 +67,6 @@ class Text:
         XL_PATH_IN = "SWCTmacross.xlsm"
 
         if Path(f"{savePath}/{XL_PATH_OUT}").is_file():
-            print("ПОЛУНДРА")
             XL_PATH_IN = f"{savePath}/{XL_PATH_OUT}"
 
         self.wb = load_workbook(XL_PATH_IN, keep_vba=True)
