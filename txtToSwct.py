@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
+import Main
 from Main import savePath
 from Main import SWCTname
 
@@ -118,4 +119,4 @@ def main():
         total += len(rows)
 
     wb.save(XL_PATH_OUT)
-    print(f"{SWCTname} Готово. Всего добавлено строк: {total}. Сохранено в: {XL_PATH_OUT}")
+    print(f"{Main.window.SWCTname} Готово. Всего добавлено строк: {total}. Сохранено в: {XL_PATH_OUT}")

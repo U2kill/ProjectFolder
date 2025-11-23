@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from ui import Ui_MainWindow  # импорт сгенерированного интерфейса
 from PyQt5.QtWidgets import QFileDialog
 import txtToSwct
-
+from SWCT import Text
 
 operation = "SWCR creator"
 filePath = "value"
@@ -63,6 +63,7 @@ class MyApp(QMainWindow):
                 log.append("Добавлены файлы:")
                 log.append(f"{L}")
                 self.logger(log)
+                print(textPath)
                 
 
     def openFileDialog2(self):
@@ -73,7 +74,7 @@ class MyApp(QMainWindow):
             self.ui.pushButton_2.setText(savePath)
             log.append(f"Добавлена директория для сохранения документа: \n{savePath}")
             self.logger(log)
-            # txtToSwct.savePath = savePath
+
             
 
 
@@ -85,16 +86,16 @@ class MyApp(QMainWindow):
 
     def saveName(self):
         global SWCTname
-        SWCTname = self.ui.lineEdit.text()
+        SWCTname = f"{self.ui.lineEdit.text()}.xlsm"
+        print(SWCTname)
         log.append(f"Добавлено имя файла: \n{SWCTname}")
         self.logger(log)
-        # txtToSwct.SWCTname = SWCTname
+
 
     def startSWCT(self):
-        print(SWCTname)
-        print(savePath)
-        # print(f"{txtToSwct.SWCTname }")
-        txtToSwct.main()
+
+        result = Text()
+        result.main(textPath, SWCTname)
 
     
 if __name__ == "__main__":
