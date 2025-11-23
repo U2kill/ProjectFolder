@@ -35,10 +35,10 @@ class MyApp(QMainWindow):
     def comboBoxFunc(self, text):
         if self.ui.comboBox.currentText() == "SWCT Creator":
             self.ui.lineEdit.show()
-            self.ui.pushButton_4.show()           
+         
         else:
             self.ui.lineEdit.hide()
-            self.ui.pushButton_4.hide()
+
 
         global operation
         operation = text
