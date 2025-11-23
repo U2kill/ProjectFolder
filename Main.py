@@ -1,14 +1,4 @@
-#from UI#
-# from PyQt5 import uic
-# from PyQt5.QtWidgets import QApplication
-# Form, Window = uic.loadUiType("untitled.ui")
-# app = QApplication([])
-# window = Window()
-# form = Form()
-# form.setupUi(window)
-# window.show()
-# app.exec_()
-#
+
 from pathlib import Path
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -75,9 +65,7 @@ class MyApp(QMainWindow):
             log.append(f"Добавлена директория для сохранения документа: \n{savePath}")
             self.logger(log)
 
-            
-
-
+        
     def logger(self, log):
         for i in log:
             str(i)
@@ -95,7 +83,7 @@ class MyApp(QMainWindow):
     def startSWCT(self):
 
         result = Text()
-        result.main(textPath, SWCTname)
+        result.main(textPath, SWCTname, savePath)
 
     
 if __name__ == "__main__":

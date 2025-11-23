@@ -60,12 +60,13 @@ class Text:
             self.row += 1
         return self.row
     
-    def main(self, pathList, XL_PATH_OUT):
+    def main(self, pathList, XL_PATH_OUT, savePath):
 
         XL_PATH_IN = "SWCTmacross.xlsm"
 
-        if Path(XL_PATH_OUT).exists():
-            XL_PATH_IN = XL_PATH_OUT
+        if Path(f"{savePath}/{XL_PATH_OUT}").is_file():
+            print("ПОЛУНДРА")
+            XL_PATH_IN = f"{savePath}/{XL_PATH_OUT}"
 
         self.wb = load_workbook(XL_PATH_IN, keep_vba=True)
         ws = self.wb.active
@@ -110,8 +111,8 @@ class Text:
             print(f"{fpath.name}: добавлено строк — {len(rows)}")
             total += len(rows)
 
-        self.wb.save(XL_PATH_OUT)
-        print(f"Готово. Всего добавлено строк: {total}. Сохранено в: {XL_PATH_OUT}")
+        self.wb.save(f"{savePath}\{XL_PATH_OUT}")
+        print(f"Готово. Всего добавлено строк: {total}. Сохранено в: {savePath}/{XL_PATH_OUT}")
 
 
 # result = Text()
