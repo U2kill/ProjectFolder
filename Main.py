@@ -30,15 +30,28 @@ class MyApp(QMainWindow):
         self.ui.pushButton.clicked.connect(self.openFileDialog)
         self.ui.pushButton_2.clicked.connect(self.openFileDialog2)
         self.ui.lineEdit.editingFinished.connect(self.saveName)
-        self.ui.pushButton_3.clicked.connect(self.startSWCT)
+        self.ui.pushButton_3.clicked.connect(self.startOp)
         
         self.threadpool = QThreadPool()
 
+    def nameChecker(self): # Добавить нормальную проверку имени файла
+        if self.ui.lineEdit.text == None:
+            return False
+        return True
+
+    def namError(self):
+        QApplication.beep()
+        self.ui.lineEdit.setStyleSheet("background-color: pink;")
+
     def comboBoxFunc(self, text):
         if self.ui.comboBox.currentText() == "SWCT Creator":
+            self.ui.pushButton.setText("Select text")
+            self.ui.label_2.setText("Text files path:")
             self.ui.lineEdit.show()
          
         else:
+            self.ui.pushButton.setText("Select SWCT")
+            self.ui.label_2.setText("SWCT file path:")
             self.ui.lineEdit.hide()
         global operation
         operation = text
@@ -56,6 +69,10 @@ class MyApp(QMainWindow):
                 log.append(f"Добавлены файлы: \n{L}")
                 self.logger(log)
                 print(textPath)
+        
+        else:
+            # global textPath
+            curFilePath, _ = QFileDialog.getOpenFileName(self,"Выберите файл","",";Текстовые (*.txt);")
                 
     def openFileDialog2(self):
         global savePath
@@ -73,21 +90,34 @@ class MyApp(QMainWindow):
         self.ui.textEdit.setText(log)
 
     def saveName(self):
-        global SWCTname
-        SWCTname = f"{self.ui.lineEdit.text().strip()}.xlsm"
-        print(SWCTname)
-        log.append(f"Добавлено имя файла: \n{SWCTname}")
-        self.logger(log)
+        if self.nameChecker == True:
+            self.ui.lineEdit.setStyleSheet("")
+            global SWCTname
+            SWCTname = f"{self.ui.lineEdit.text().strip()}.xlsm"
+            print(SWCTname)
+            log.append(f"Добавлено имя файла: \n{SWCTname}")
+            self.logger(log)
 
-    def startSWCT(self):
-        result = Text(textPath, SWCTname, savePath)
-        self.threadpool.start(result)
-        result.signals.progress.connect(lambda txt:(log.append(f"{txt}"), self.logger(log)))
-        result.signals.finished.connect(lambda: (log.append(f"\nСоздан файл {SWCTname}"), self.logger(log)))
-        
- 
+    def startOp(self):
+        if self.ui.comboBox.currentText() == "SWCT Creator":
+            if self.nameChecker == True:
+                result = Text(textPath, SWCTname, savePath)
+                self.threadpool.start(result)
+                result.signals.progress.connect(lambda txt:(log.append(f"{txt}"), self.logger(log)))
+                result.signals.finished.connect(lambda: (log.append(f"\nСоздан файл {SWCTname}"), self.logger(log)))
+            else:
+                self.namError()    
 
-    
+        elif self.ui.comboBox.currentText() == "Yamazumi Creator":
+            print("Вот тут напишем крутую програмку")
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyApp()
