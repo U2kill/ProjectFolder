@@ -87,8 +87,9 @@ class MyApp(QMainWindow):
     def startSWCT(self):
 
         result = Text()
+        result.run(textPath, SWCTname, savePath)
         # asyncio.run(result.main(textPath, SWCTname, savePath))
-        result.main(textPath, SWCTname, savePath)
+        # result.main(textPath, SWCTname, savePath)
 
     
 if __name__ == "__main__":

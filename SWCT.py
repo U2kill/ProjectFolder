@@ -4,6 +4,8 @@ from pathlib import Path
 import re
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
+import asyncio
+from PyQt5.QtCore import QThread, pyqtSignal
 # import asyncio
 # from Main import savePath
 # from Main import SWCTname
@@ -17,7 +19,7 @@ from openpyxl.utils import get_column_letter, column_index_from_string
 
 # PathList = []
 
-class Text:
+class Text(QThread):
     def to_float(self, s: str):
 
         if s is None:
@@ -62,7 +64,7 @@ class Text:
             self.row += 1
         return self.row
     
-    def main(self, pathList, XL_PATH_OUT, savePath):
+    def run(self, pathList, XL_PATH_OUT, savePath):
 
         XL_PATH_IN = "SWCTmacross.xlsm"
 
@@ -116,7 +118,4 @@ class Text:
         print(f"Готово. Всего добавлено строк: {total}. Сохранено в: {savePath}/{XL_PATH_OUT}")
 
 
-# result = Text()
 
-
-# result.main(['E:/7. Установка крышки на корпус.txt', 'E:/6. ЛИН установка линз на СДМ.txt', 'E:/5. ПрСБ распайка проводов блока питания.txt'], "SWCT.xlsm")
