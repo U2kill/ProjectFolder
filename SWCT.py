@@ -44,7 +44,7 @@ class WorkerSignals(QObject):
     finished = pyqtSignal()
     error = pyqtSignal(tuple)
     result = pyqtSignal(str)
-    progress = pyqtSignal(float)
+    progress = pyqtSignal(str)
 
 
 class Text(QRunnable):
@@ -54,6 +54,7 @@ class Text(QRunnable):
         self.pathList = pathList
         self.SWCTname = SWCTname
         self.savePath = savePath
+        self.signals = WorkerSignals()
 
     def to_float(self, s: str):
 
@@ -78,7 +79,7 @@ class Text(QRunnable):
         """
         self.out = []
         self.rx = re.compile(r'^(\d+)\.\s*(.+)\.txt$', re.IGNORECASE)
-        ################################### PROBLEM!!!!!!!!!!!
+
         for p in pathList:
             if not Path(p).is_file() or Path(p).suffix.lower() != ".txt":
                 continue
@@ -87,13 +88,12 @@ class Text(QRunnable):
                 self.num = int(self.m.group(1))
                 self.out.append((self.num, Path(p)))
         # сортируем по числовому префиксу
+
         p = Path(p)
-
-
         return [p for _, p in sorted(self.out, key=lambda t: t[0])]
     
     def first_empty_row(self, ws, col_letter: str) -> int:
-        """Ищем первую пустую строку в колонке col_letter начиная с start_row."""
+        # """Ищем первую пустую строку в колонке col_letter начиная с start_row."""
         self.row = 9
         while ws[f"{col_letter}{self.row}"].value not in (None, ""):
             self.row += 1
@@ -141,6 +141,7 @@ class Text(QRunnable):
                         rows.append((text, num1, num2))
 
             for text, num1, num2 in rows:
+                
                 ws[f"{TEXT_COL}{row_ptr}"] = text
                 ws[f"{NUM1_COL}{row_ptr}"] = num1
                 if num2 is not None:
@@ -148,12 +149,12 @@ class Text(QRunnable):
                 row_ptr += 1
 
 
-
+            self.signals.progress.emit(f"{fpath.name}: добавлено строк — {len(rows)}")
             #print(f"{fpath.name}: добавлено строк — {len(rows)}")
             total += len(rows)
 
-        # self.signals = WorkerSignals()
-        # self.signals.result.emit("result")
+        
+        self.signals.finished.emit()
         self.wb.save(f"{self.savePath}\{self.SWCTname}")
         #print(f"Готово. Всего добавлено строк: {total}. Сохранено в: {self.savePath}/{self.SWCTname}")
 
