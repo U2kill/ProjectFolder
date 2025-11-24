@@ -4,8 +4,15 @@ from pathlib import Path
 import re
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
-import asyncio
-from PyQt5.QtCore import QThread, pyqtSignal
+
+from PyQt5.QtCore import (
+    QObject,
+    QRunnable,
+    QThreadPool,
+    QTimer,
+    pyqtSignal,
+    pyqtSlot,
+)
 # import asyncio
 # from Main import savePath
 # from Main import SWCTname
@@ -16,10 +23,38 @@ from PyQt5.QtCore import QThread, pyqtSignal
 # SHEET_IDX   = 0
 # START_ROW   = 9        # начинаем всегда с 9-й строки
 # SHIFT_COLS  = 8        # сдвиг вправо на 7 колонок (B/C/D -> I/J/K)
-
 # PathList = []
 
-class Text(QThread):
+class WorkerSignals(QObject):
+    """Signals from a running worker thread.
+
+    finished
+        No data
+
+    error
+        tuple (exctype, value, traceback.format_exc())
+
+    result
+        object data returned from processing, anything
+
+    progress
+        float indicating % progress
+    """
+
+    finished = pyqtSignal()
+    error = pyqtSignal(tuple)
+    result = pyqtSignal(str)
+    progress = pyqtSignal(float)
+
+
+class Text(QRunnable):
+
+    def __init__(self, pathList, SWCTname, savePath):
+        super().__init__()
+        self.pathList = pathList
+        self.SWCTname = SWCTname
+        self.savePath = savePath
+
     def to_float(self, s: str):
 
         if s is None:
@@ -64,12 +99,14 @@ class Text(QThread):
             self.row += 1
         return self.row
     
-    def run(self, pathList, XL_PATH_OUT, savePath):
+
+    @pyqtSlot()
+    def run(self):
 
         XL_PATH_IN = "SWCTmacross.xlsm"
 
-        if Path(f"{savePath}/{XL_PATH_OUT}").is_file():
-            XL_PATH_IN = f"{savePath}/{XL_PATH_OUT}"
+        if Path(f"{self.savePath}/{self.SWCTname}").is_file():
+            XL_PATH_IN = f"{self.savePath}/{self.SWCTname}"
 
         self.wb = load_workbook(XL_PATH_IN, keep_vba=True)
         ws = self.wb.active
@@ -79,7 +116,7 @@ class Text(QThread):
         NUM1_COL = "K"
         NUM2_COL = "L"
 
-        files = self.collect_numbered_txt_files(pathList)
+        files = self.collect_numbered_txt_files(self.pathList)
 
         if not files:
             print("Не найдено файлов вида 'N. что-то.txt' в текущей папке.")
@@ -88,7 +125,6 @@ class Text(QThread):
         total = 0
         row_ptr = self.first_empty_row(ws, TEXT_COL)
 
-        print(row_ptr)
 
         for fpath in files:
             rows = []
@@ -108,14 +144,18 @@ class Text(QThread):
                 ws[f"{TEXT_COL}{row_ptr}"] = text
                 ws[f"{NUM1_COL}{row_ptr}"] = num1
                 if num2 is not None:
-                    self.ws[f"{NUM2_COL}{row_ptr}"] = num2
+                    ws[f"{NUM2_COL}{row_ptr}"] = num2
                 row_ptr += 1
 
-            print(f"{fpath.name}: добавлено строк — {len(rows)}")
+
+
+            #print(f"{fpath.name}: добавлено строк — {len(rows)}")
             total += len(rows)
 
-        self.wb.save(f"{savePath}\{XL_PATH_OUT}")
-        print(f"Готово. Всего добавлено строк: {total}. Сохранено в: {savePath}/{XL_PATH_OUT}")
+        # self.signals = WorkerSignals()
+        # self.signals.result.emit("result")
+        self.wb.save(f"{self.savePath}\{self.SWCTname}")
+        #print(f"Готово. Всего добавлено строк: {total}. Сохранено в: {self.savePath}/{self.SWCTname}")
 
 
 

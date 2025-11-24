@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QFileDialog
 import txtToSwct
 from SWCT import Text
 
+from PyQt5.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
 
 
 
@@ -18,6 +19,7 @@ log = []
 SWCTname = "Value"
 
 class MyApp(QMainWindow):
+
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
@@ -31,6 +33,7 @@ class MyApp(QMainWindow):
         # self.ui.pushButton_4.clicked.connect(self.saveName)
         self.ui.pushButton_3.clicked.connect(self.startSWCT)
         
+        self.threadpool = QThreadPool()
 
     def comboBoxFunc(self, text):
         if self.ui.comboBox.currentText() == "SWCT Creator":
@@ -85,15 +88,16 @@ class MyApp(QMainWindow):
 
 
     def startSWCT(self):
+        
 
-        result = Text()
-        result.run(textPath, SWCTname, savePath)
-        # asyncio.run(result.main(textPath, SWCTname, savePath))
-        # result.main(textPath, SWCTname, savePath)
+        result = Text(textPath, SWCTname, savePath)
+        self.threadpool.start(result)
+        # result.signals.finished.connect(print("AYE"))
+ 
 
     
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyApp()
     window.show()
-    sys.exit(app.exec_())
+    app.exec_()
