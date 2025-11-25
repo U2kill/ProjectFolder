@@ -10,10 +10,9 @@ from SWCT import Text
 from PyQt5.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
 
 
-
 operation = "SWCR creator"
-filePath = "value"
-savePath = "value"
+filePath = None
+savePath = None
 textPath = []
 log = []
 SWCTname = "Value"
@@ -36,6 +35,16 @@ class MyApp(QMainWindow):
 
     def nameChecker(self): # Добавить нормальную проверку имени файла
         if len(str(self.ui.lineEdit.text())) == 0:
+            return False
+        else:
+            return True
+
+    def filePathChecker(self):
+        if filePath == None and savePath == None:
+            return False
+        elif operation == "SWCR creator" and textPath == None:
+            return False
+        elif operation == "Yamazumi Creator" or operation == "JES Creator" and savePath == None:
             return False
         else:
             return True
@@ -111,13 +120,15 @@ class MyApp(QMainWindow):
         
     def startOp(self):
         if self.ui.comboBox.currentText() == "SWCT Creator":
-            if self.nameChecker() == True:
+            if self.nameChecker() == True and self.filePathChecker() == True:
                 result = Text(textPath, SWCTname, savePath)
                 self.threadpool.start(result)
                 result.signals.progress.connect(lambda txt:(log.append(f"{txt}"), self.logger(log)))
                 result.signals.finished.connect(lambda: (log.append(f"\nСоздан файл {SWCTname}"), self.logger(log)))
-            else:
+            elif self.nameChecker() == False:
                 self.namError()    
+            else:
+                QApplication.beep()
 
         elif self.ui.comboBox.currentText() == "Yamazumi Creator":
             print("Вот тут напишем крутую програмку")
