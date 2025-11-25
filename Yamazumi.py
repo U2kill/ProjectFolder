@@ -5,22 +5,32 @@
 from openpyxl import load_workbook
 from pathlib import Path
 
+from PyQt5.QtCore import (
+    QObject,
+    QRunnable,
+    QThreadPool,
+    QTimer,
+    pyqtSignal,
+    pyqtSlot,
+)
 
 
 
-
-xlPath = Path("SWCT Светильник LINE ILF30-1,5W40-30H-150(50P02).xlsm")
-templateSite = Path("/content/drive/MyDrive/Yamazumi/Yamazumi_Участка.xlsx")
-templateWorkshop = Path("/content/drive/MyDrive/Yamazumi/Yamazumi_Цеха.xlsx")
+# xlPath = Path("SWCT Светильник LINE ILF30-1,5W40-30H-150(50P02).xlsm")
+# templateWorkshop = Path("/content/drive/MyDrive/Yamazumi/Yamazumi_Цеха.xlsx")
 
 
-activeWb = load_workbook(xlPath, keep_vba=True)
-templateWorkshop = load_workbook(templateWorkshop)
-templateSite = load_workbook(templateSite)
+# activeWb = load_workbook(xlPath, keep_vba=True)
+# templateWorkshop = load_workbook(templateWorkshop)
 
-class Yamazumi:
+class Yamazumi():
+  def __init__(self, filePath, SWCTname):
+    # super().__init__()
+    self.SWCTname = SWCTname
+    self.filePath = filePath
+    
 ###ПАРСЕР###
-  def createOperationsList(counter):
+  def createOperationsList(counter, sheet):
     num = 9
     sitesList = []
     site = "Value"
@@ -53,8 +63,7 @@ class Yamazumi:
 
   ###ЗАПИСЬ В YAMAZUMI ЦЕХ###
   def writeInWorkshop(operationsList, sheet):
-    siteList = ["РЕГУЛИРОВКА","МЕХ СБ","ППМ","ЛИНЗЫ","ПРСБ","ПРОГОН","СБОРКА","УПАКОВКА"]
-    sectionList=["I16:K35", "N16:P35", "S16:U35", "X16:Z35", "AC16:AE35", "AH16:AJ35", "AM16:AO35", "AR16:AT35"]
+
     siteCol = {"МЕХ СБ": [9,10,11], "ППМ": [14,15,16], "РЕГУЛИРОВКА":[19,20,21], "ПРСБ":[24,25,26], "ПРОГОН":[29,30,31], "ЛИНЗЫ":[34,35,36],"СБОРКА":[39,40,41], "УПАКОВКА":[44,45,46]}
     number = 16
     site = 0
@@ -80,20 +89,30 @@ class Yamazumi:
         sheet.cell(row = number, column = siteCol[i.get('Участок')][1], value = i.get('Польза'))
         sheet.cell(row = number, column = siteCol[i.get('Участок')][2], value = i.get('Потери'))
         number += 1
+    
+  def run(self):
 
-  sheet = activeWb["SWCT"]
+    templateWorkshop = Path("Yamazumi.xlsx")
+    templateWorkshop = load_workbook(templateWorkshop)
 
-  counter = 9
-  for row in sheet["J9:J300"]:
-    for cell in row:
-      if cell.value != None:
-        counter += 1
+    activeWb = load_workbook(Path(self.filePath, self.SWCTname))
+    sheet = activeWb["SWCT"]
 
-  countSec = f"M9:M{counter}"
-  operationsList = createOperationsList(counter)
+    counter = 9
+    for row in sheet["J9:J300"]:
+      for cell in row:
+        if cell.value != None:
+          counter += 1
 
-  sheet = templateWorkshop["YAMAZUMI цеха"]
+    operationsList = self.createOperationsList(counter)
 
-  writeInWorkshop(operationsList, sheet)
+    sheet = templateWorkshop["YAMAZUMI цеха"]
 
-  templateWorkshop.save("Yamazumi цеха.xlsx")
+    self.writeInWorkshop(operationsList, sheet)
+
+    templateWorkshop.save("Yamazumi цеха.xlsx")
+
+
+result = Yamazumi(r"C:\Users\pisos\Downloads", "SWCT Светильник LINE ILF30-1,5W40-30H-150(50P02)1.xlsm")
+# QThreadPool.globalInstance().start(result)
+result.run()
