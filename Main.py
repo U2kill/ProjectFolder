@@ -35,9 +35,10 @@ class MyApp(QMainWindow):
         self.threadpool = QThreadPool()
 
     def nameChecker(self): # Добавить нормальную проверку имени файла
-        if self.ui.lineEdit.text == None:
+        if len(str(self.ui.lineEdit.text())) == 0:
             return False
-        return True
+        else:
+            return True
 
     def namError(self):
         QApplication.beep()
@@ -71,9 +72,19 @@ class MyApp(QMainWindow):
                 print(textPath)
         
         else:
-            # global textPath
-            curFilePath, _ = QFileDialog.getOpenFileName(self,"Выберите файл","",";Текстовые (*.txt);")
-                
+            global filePath
+            curFilePath, _ = QFileDialog.getOpenFileName(self,"Выберите файл","",";Текстовые (*.xlsm);")
+            if len(curFilePath) > 0:
+                dir = Path(curFilePath[0])
+                filePath = curFilePath[:]
+                txtToSwct.PathList = filePath
+                self.ui.pushButton.setText(f"{dir.parent}")
+                L = "\n".join(filePath)
+                log.append(f"Добавлены файлы: \n{L}")
+                self.logger(log)
+                print(filePath)
+
+
     def openFileDialog2(self):
         global savePath
         curFilePath = QFileDialog.getExistingDirectory(parent=None, caption="Выберите папку", directory="/home/user")
@@ -90,17 +101,17 @@ class MyApp(QMainWindow):
         self.ui.textEdit.setText(log)
 
     def saveName(self):
-        if self.nameChecker == True:
+        if self.nameChecker() == True:
             self.ui.lineEdit.setStyleSheet("")
             global SWCTname
             SWCTname = f"{self.ui.lineEdit.text().strip()}.xlsm"
             print(SWCTname)
             log.append(f"Добавлено имя файла: \n{SWCTname}")
             self.logger(log)
-
+        
     def startOp(self):
         if self.ui.comboBox.currentText() == "SWCT Creator":
-            if self.nameChecker == True:
+            if self.nameChecker() == True:
                 result = Text(textPath, SWCTname, savePath)
                 self.threadpool.start(result)
                 result.signals.progress.connect(lambda txt:(log.append(f"{txt}"), self.logger(log)))
