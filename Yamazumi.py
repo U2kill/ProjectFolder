@@ -14,11 +14,11 @@ from PyQt5.QtCore import (
     pyqtSlot,
 )
 
-class Yamazumi():
-    def __init__(self, filePath, SWCTname):
-        # super().__init__()
-        self.SWCTname = SWCTname
+class Yamazumi(QRunnable):
+    def __init__(self, filePath, savePath):
+        super().__init__()
         self.filePath = filePath
+        self.savePath = savePath
 
     def createOperationsList(self, sheet):
         num = 9
@@ -77,12 +77,13 @@ class Yamazumi():
                 sheet.cell(row = number, column = siteCol[i.get('Участок')][2], value = i.get('Потери'))
                 number += 1
     
+    @pyqtSlot()    
     def run(self):
 
         templateWorkshop = Path("Yamazumi.xlsx")
         templateWorkshop = load_workbook(templateWorkshop)
 
-        activeWb = load_workbook(Path(self.filePath, self.SWCTname))
+        activeWb = load_workbook(Path(self.filePath))
         sheet = activeWb["SWCT"]
 
         self.counter = 9
@@ -97,9 +98,10 @@ class Yamazumi():
 
         self.writeInWorkshop(operationsList, sheet)
 
-        templateWorkshop.save("Yamazumi цеха.xlsx")
+        print(f"{self.savePath}/Yamazumi цеха.xlsx")
+        templateWorkshop.save(f"{self.savePath}\Yamazumi цеха.xlsx")
 
-
-result = Yamazumi(r"C:\Users\pisos\Downloads", "SWCT Светильник LINE ILF30-1,5W40-30H-150(50P02)1.xlsm")
-# QThreadPool.globalInstance().start(result)
-result.run()
+if __name__ == "__main__":
+    result = Yamazumi(r"C:\Users\pisos\Downloads", "SWCT Светильник LINE ILF30-1,5W40-30H-150(50P02)1.xlsm")
+    QThreadPool.globalInstance().start(result)
+    result.run()

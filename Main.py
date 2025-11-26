@@ -6,8 +6,8 @@ from ui import Ui_MainWindow  # импорт сгенерированного и
 from PyQt5.QtWidgets import QFileDialog
 import txtToSwct
 from SWCT import Text
-
 from PyQt5.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
+from Yamazumi import Yamazumi
 
 
 operation = "SWCR creator"
@@ -40,14 +40,18 @@ class MyApp(QMainWindow):
             return True
 
     def filePathChecker(self):
-        if filePath == None and savePath == None:
-            return False
-        elif operation == "SWCR creator" and textPath == None:
-            return False
-        elif operation == "Yamazumi Creator" or operation == "JES Creator" and savePath == None:
-            return False
-        else:
-            return True
+        if operation == "SWCR creator":
+            if textPath == None or savePath == None:
+                return False
+            else:
+                return True
+
+        if operation == "Yamazumi Creator" or operation == "JES Creator":
+            if filePath == None or savePath == None:
+                return False
+            else:
+                return True
+
 
     def namError(self):
         QApplication.beep()
@@ -73,7 +77,7 @@ class MyApp(QMainWindow):
             if len(curFilePath) > 0:
                 dir = Path(curFilePath[0])
                 textPath = curFilePath[:]
-                txtToSwct.PathList = textPath
+                # txtToSwct.PathList = textPath
                 self.ui.pushButton.setText(f"{dir.parent}")
                 L = "\n".join(textPath)
                 log.append(f"Добавлены файлы: \n{L}")
@@ -84,12 +88,10 @@ class MyApp(QMainWindow):
             global filePath
             curFilePath, _ = QFileDialog.getOpenFileName(self,"Выберите файл","",";Текстовые (*.xlsm);")
             if len(curFilePath) > 0:
-                dir = Path(curFilePath[0])
-                filePath = curFilePath[:]
-                txtToSwct.PathList = filePath
-                self.ui.pushButton.setText(f"{dir.parent}")
-                L = "\n".join(filePath)
-                log.append(f"Добавлены файлы: \n{L}")
+                dir = Path(curFilePath)
+                filePath = curFilePath
+                self.ui.pushButton.setText(dir.stem)
+                log.append(f"Добавлен файл SWCT: \n{curFilePath}")
                 self.logger(log)
                 print(filePath)
 
@@ -99,6 +101,7 @@ class MyApp(QMainWindow):
         curFilePath = QFileDialog.getExistingDirectory(parent=None, caption="Выберите папку", directory="/home/user")
         if len(curFilePath) > 2:
             savePath = curFilePath
+            # print((savePath))
             self.ui.pushButton_2.setText(savePath)
             log.append(f"Добавлена директория для сохранения документа: \n{savePath}")
             self.logger(log)
@@ -125,15 +128,16 @@ class MyApp(QMainWindow):
                 self.threadpool.start(result)
                 result.signals.progress.connect(lambda txt:(log.append(f"{txt}"), self.logger(log)))
                 result.signals.finished.connect(lambda: (log.append(f"\nСоздан файл {SWCTname}"), self.logger(log)))
+
             elif self.nameChecker() == False:
-                self.namError()    
-            else:
-                QApplication.beep()
+                self.namError()
 
         elif self.ui.comboBox.currentText() == "Yamazumi Creator":
-            print("Вот тут напишем крутую програмку")
-
-
+            if self.filePathChecker() == True:
+                print("HERE")
+                result = Yamazumi(filePath, savePath)
+                self.threadpool.start(result)
+                    # print("Вот тут напишем крутую програмку")        
 
 
 
