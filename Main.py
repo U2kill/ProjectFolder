@@ -10,7 +10,7 @@ from PyQt5.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
 from Yamazumi import Yamazumi
 
 
-operation = "SWCR creator"
+
 filePath = None
 savePath = None
 textPath = []
@@ -23,6 +23,7 @@ class MyApp(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.operation = "SWCR creator"
 
         
         self.ui.comboBox.currentTextChanged.connect(self.comboBoxFunc)
@@ -40,13 +41,13 @@ class MyApp(QMainWindow):
             return True
 
     def filePathChecker(self):
-        if operation == "SWCR creator":
+        if self.operation == "SWCR creator":
             if textPath == None or savePath == None:
                 return False
             else:
                 return True
 
-        if operation == "Yamazumi Creator" or operation == "JES Creator":
+        if self.operation == "Yamazumi Creator" or self.operation == "JES Creator":
             if filePath == None or savePath == None:
                 return False
             else:
@@ -67,8 +68,7 @@ class MyApp(QMainWindow):
             self.ui.pushButton.setText("Select SWCT")
             self.ui.label_2.setText("SWCT file path:")
             self.ui.lineEdit.hide()
-        global operation
-        operation = text
+        self.operation = text
 
     def openFileDialog(self):
         if self.ui.comboBox.currentText() == "SWCT Creator":
@@ -125,9 +125,11 @@ class MyApp(QMainWindow):
         if self.ui.comboBox.currentText() == "SWCT Creator":
             if self.nameChecker() == True and self.filePathChecker() == True:
                 result = Text(textPath, SWCTname, savePath)
+                log.append("Создание документа...")
+                self.logger(log)
                 self.threadpool.start(result)
                 result.signals.progress.connect(lambda txt:(log.append(f"{txt}"), self.logger(log)))
-                result.signals.finished.connect(lambda: (log.append(f"\nСоздан файл {SWCTname}"), self.logger(log)))
+                result.signals.finished.connect(lambda: (log.append(f"\nСоздан файл: {SWCTname}"), self.logger(log)))
 
             elif self.nameChecker() == False:
                 self.namError()
@@ -135,13 +137,12 @@ class MyApp(QMainWindow):
         elif self.ui.comboBox.currentText() == "Yamazumi Creator":
             if self.filePathChecker() == True:
                 print("HERE")
+                log.append("Создание документа...")
+                self.logger(log)
                 result = Yamazumi(filePath, savePath)
                 self.threadpool.start(result)
+                result.signals.finished.connect(lambda: (log.append("\nСоздан файл: Yamazumi цеха.xlsx"), self.logger(log)))
                     # print("Вот тут напишем крутую програмку")        
-
-
-
-
 
 
 if __name__ == "__main__":

@@ -14,11 +14,17 @@ from PyQt5.QtCore import (
     pyqtSlot,
 )
 
+class WorkerSignals(QObject):
+    finished = pyqtSignal()
+    
+
+
 class Yamazumi(QRunnable):
     def __init__(self, filePath, savePath):
         super().__init__()
         self.filePath = filePath
         self.savePath = savePath
+        self.signals = WorkerSignals()
 
     def createOperationsList(self, sheet):
         num = 9
@@ -99,6 +105,7 @@ class Yamazumi(QRunnable):
         self.writeInWorkshop(operationsList, sheet)
 
         print(f"{self.savePath}/Yamazumi цеха.xlsx")
+        self.signals.finished.emit()
         templateWorkshop.save(f"{self.savePath}\Yamazumi цеха.xlsx")
 
 if __name__ == "__main__":
