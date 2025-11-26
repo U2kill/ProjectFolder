@@ -17,15 +17,15 @@ textPath = []
 log = []
 SWCTname = "Value"
 
+
 class MyApp(QMainWindow):
 
     def __init__(self):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.operation = "SWCR creator"
-
-        
+        self.operation = "SWCT creator"
+        # self.operation = ""
         self.ui.comboBox.currentTextChanged.connect(self.comboBoxFunc)
         self.ui.pushButton.clicked.connect(self.openFileDialog)
         self.ui.pushButton_2.clicked.connect(self.openFileDialog2)
@@ -41,7 +41,7 @@ class MyApp(QMainWindow):
             return True
 
     def filePathChecker(self):
-        if self.operation == "SWCR creator":
+        if self.operation == "SWCT creator":
             if textPath == None or savePath == None:
                 return False
             else:
@@ -77,7 +77,6 @@ class MyApp(QMainWindow):
             if len(curFilePath) > 0:
                 dir = Path(curFilePath[0])
                 textPath = curFilePath[:]
-                # txtToSwct.PathList = textPath
                 self.ui.pushButton.setText(f"{dir.parent}")
                 L = "\n".join(textPath)
                 log.append(f"Добавлены файлы: \n{L}")
@@ -142,7 +141,7 @@ class MyApp(QMainWindow):
                 result = Yamazumi(filePath, savePath)
                 self.threadpool.start(result)
                 result.signals.finished.connect(lambda: (log.append("\nСоздан файл: Yamazumi цеха.xlsx"), self.logger(log)))
-                    # print("Вот тут напишем крутую програмку")        
+    
 
 
 if __name__ == "__main__":
