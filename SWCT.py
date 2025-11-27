@@ -13,17 +13,6 @@ from PyQt5.QtCore import (
     pyqtSignal,
     pyqtSlot,
 )
-# import asyncio
-# from Main import savePath
-# from Main import SWCTname
-
-
-# XL_PATH_IN = Path("SWCTmacross.xlsm")
-# XL_PATH_OUT = Path(".xlsm")  # сохраняем как .xlsm, чтобы не потерять VBA
-# SHEET_IDX   = 0
-# START_ROW   = 9        # начинаем всегда с 9-й строки
-# SHIFT_COLS  = 8        # сдвиг вправо на 7 колонок (B/C/D -> I/J/K)
-# PathList = []
 
 class WorkerSignals(QObject):
     """Signals from a running worker thread.

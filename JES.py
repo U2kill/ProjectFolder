@@ -53,7 +53,7 @@ class Jes(QRunnable):
                 return lamp
 
     def getFullLampName(self):
-        fullName = self.xlPath.stem.replace("$SWCT","").replace("Светильник","").rstrip()
+        fullName = self.xlPath.stem.replace("SWCT","").replace("Светильник","").strip()
         return fullName
 
     def createOperationsList(self, counter, sheet):
@@ -67,7 +67,7 @@ class Jes(QRunnable):
 
         while num <= counter:
             cell_f = sheet[f"F{num}"]
-            cell_m = sheet[f"M{num}"]
+            cell_m = sheet[f"E{num}"]
 
             #первое вхождение в участов
             if isinstance(cell_f.value, str)  and isinstance(cell_m.value, str):
@@ -77,7 +77,7 @@ class Jes(QRunnable):
                 elif sheet[f"L{num}"].value == None:
                     sheet[f"L{num}"].value = 0
 
-                site = sheet[f"M{num}"].value
+                site = sheet[f"E{num}"].value
                 Operation = str(sheet[f"F{num}"].value)
                 Operation = Operation.rstrip()
                 OpBenefit = sheet[f"H{num}"].value

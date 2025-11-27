@@ -4,7 +4,6 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from ui import Ui_MainWindow  # импорт сгенерированного интерфейса
 from PyQt5.QtWidgets import QFileDialog
-import Waste.txtToSwct as txtToSwct
 from SWCT import Text
 from PyQt5.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
 from Yamazumi import Yamazumi

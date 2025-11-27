@@ -32,10 +32,10 @@ class Yamazumi(QRunnable):
         site = "Value"
         while num <= self.counter:
             cell_f = sheet[f"F{num}"]
-            cell_m = sheet[f"M{num}"]
+            cell_e = sheet[f"E{num}"]
 
-            if isinstance(cell_m.value, str) and isinstance(cell_f.value, str):
-                site = sheet[f"M{num}"].value
+            if isinstance(cell_e.value, str) and isinstance(cell_f.value, str):
+                site = sheet[f"E{num}"].value
                 benefit = sheet[f"H{num}"].value
                 loss = sheet[f"I{num}"].value
                 # удаление всех технологических процессов
@@ -45,7 +45,7 @@ class Yamazumi(QRunnable):
                     loss = 0
                 sitesList.append({"Операция": sheet[f"F{num}"].value, "Участок": site, "Польза": benefit,"Потери": loss})
 
-            elif cell_m.value is None and isinstance(cell_f.value, str):
+            elif cell_e.value is None and isinstance(cell_f.value, str):
                 # удаление всех технологических процессов
                 loss = sheet[f"I{num}"].value
                 if loss > 7200:
@@ -57,7 +57,7 @@ class Yamazumi(QRunnable):
         return sitesList
 
     def writeInWorkshop(self, operationsList, sheet):
-        siteCol = {"МЕХ СБ": [9,10,11], "ППМ": [14,15,16], "РЕГУЛИРОВКА":[19,20,21], "ПРСБ":[24,25,26], "ПРОГОН":[29,30,31], "ЛИНЗЫ":[34,35,36],"СБОРКА":[39,40,41], "УПАКОВКА":[44,45,46]}
+        siteCol = {"МЕХ СБ": [9,10,11], "ППМ": [14,15,16], "РЕГ":[19,20,21], "ПРСБ":[24,25,26], "ПРОГОН":[29,30,31], "ЛИНЗЫ":[34,35,36],"СБ":[39,40,41], "УП":[44,45,46]}
         number = 16
         site = 0
         for i in operationsList:
