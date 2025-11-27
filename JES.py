@@ -5,28 +5,36 @@ from pathlib import Path
 from functools import reduce
 import os
 from datetime import date
+from PyQt5.QtCore import (
+    QObject,
+    QRunnable,
+    QThreadPool,
+    QTimer,
+    pyqtSignal,
+    pyqtSlot,
+)
 
-# xlPath = Path("/content/drive/MyDrive/Yamazumi/$SWCT Светильник LINE ILF30-1,5W40-30H-150(50P02).xlsm")
-# pathTemplateJES = Path("/content/drive/MyDrive/Yamazumi/JES.xlsx")
-# copyTemplateJES = Path("CopyJES.xlsx")
 
-# activeWb = load_workbook(xlPath, keep_vba=True)
-# templateJES = load_workbook(pathTemplateJES)
+class WorkerSignals(QObject):
+    
+    finished = pyqtSignal()
 
-class Jes():
+
+
+class Jes(QRunnable):
     def __init__(self, xlPath, savePath):
+
+        super().__init__()
+        self.signals = WorkerSignals()
         self.savePath = savePath
         self.pathTemplateJES = Path("JES.xlsx")
         self.templateJES = load_workbook(self.pathTemplateJES)
         self.xlPath = Path(xlPath)
         self.activeWb = load_workbook(self.xlPath)
-        # self.copyTemplateJES = load_workbook(Path("CopyJES.xlsx"))
-        pass
+
 
     def count_files_recursive(self, folder_path):
         path = Path(folder_path)
-        # rglob('*') ищет во всех подпапках
-        # is_file() проверяет, что это файл
         file_count = sum(1 for file in path.rglob('*') if file.is_file())
         return file_count
 
@@ -41,11 +49,11 @@ class Jes():
                     "IntSTARK", "IntTOP", "IntTUBE", "IntTWIN", "KUB", "LINE", "LINE-GROUND", "LINEUP", "MARK", "PILL", "RAY", "SLIM", "SPOT", "TWIN", "WALL", "ZENITH",
                     "Axceccyapы", "Допоборудование", "Модули", "ТУ", "Устройства управления"]
         for lamp in lampsList:
-            if lamp in xlPath.stem:
+            if lamp in self.xlPath.stem:
                 return lamp
 
     def getFullLampName(self):
-        fullName = xlPath.stem.replace("$SWCT","").replace("Светильник","").rstrip()
+        fullName = self.xlPath.stem.replace("$SWCT","").replace("Светильник","").rstrip()
         return fullName
 
     def createOperationsList(self, counter, sheet):
@@ -177,8 +185,9 @@ class Jes():
         source_wb.save(destination_path)
 
 
-    def creatFolders(self, templateJES, copyTemplateJES, pathTemplateJES):
-        # currentData = str(date.today().strftime("%d/%m/%Y"))
+    def creatFolders(self, templateJES, pathTemplateJES):
+        copyTemplateJES = Path("CopyJES.xlsx")
+        currentData = str(date.today().strftime("%d.%m.%Y"))
         sheet = templateJES["1"]
         name = "value"
         OpName = "value"
@@ -205,8 +214,8 @@ class Jes():
                 if timer != 0:
                     print(OpName)
                     wb = self.deleteEmptyPages(wb)
-                    count = self.count_files_recursive(f"/content/drive/MyDrive/JES/JES {site}/")
-                    wb.save(f"/content/drive/MyDrive/JES/JES {site}/{count +1 }. {OpName.replace("/", "")}.xlsx")
+                    count = self.count_files_recursive(f"{self.jesPath}/JES {site}/")
+                    wb.save(f"{self.jesPath}/JES {site}/{count +1 }. {OpName.replace("/", "")}.xlsx")
 
                 self.copy_workbook(pathTemplateJES, copyTemplateJES) #создаем копию JES
                 wb = load_workbook(copyTemplateJES)#открываем JES
@@ -221,7 +230,7 @@ class Jes():
 
                 sheet["I2"] = self.getFullLampName()
                 sheet["U2"] = f"Изготовление светильника {self.getLampName()}"
-                # sheet["AT2"] = currentData
+                sheet["AH38"] = currentData
 
                 sheet["BF2"] = activeList
                 sheet["AP2"] = TactTime
@@ -270,8 +279,8 @@ class Jes():
 
                 sheet[f"BG{num}"] = Time
 
-
-    def main(self):
+    @pyqtSlot()
+    def run(self):
 
         sheet = self.activeWb["SWCT"]
 
@@ -283,18 +292,11 @@ class Jes():
 
 
         self.operationsList = self.createOperationsList(counter, sheet)
-
-        # for i in operationsList:
-        #     print(i)
-
-        # with open("List.txt", "w", encoding="utf-8") as file:
-        #     for i in operationsList:
-        #         file.write(f"{i}\n")
-
-        self.creatFolders(self.templateJES, self.copyTemplateJES, self.pathTemplateJES)
+        self.creatFolders(self.templateJES, self.pathTemplateJES)
+        self.signals.finished.emit()
 
 
 
-result = Jes(r"C:\Users\pisos\Downloads\SWCT LINE ILF30-1,5W40-30H-150(50P02)1.xlsm")
-result.main()
+# result = Jes(r"C:\Users\pisos\Downloads\SWCT LINE ILF30-1,5W40-30H-150(50P02)1.xlsm", r"C:\Users\pisos\Downloads\321")
+# result.main()
 

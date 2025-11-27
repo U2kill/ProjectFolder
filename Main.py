@@ -4,11 +4,11 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from ui import Ui_MainWindow  # импорт сгенерированного интерфейса
 from PyQt5.QtWidgets import QFileDialog
-import txtToSwct
+import Waste.txtToSwct as txtToSwct
 from SWCT import Text
 from PyQt5.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
 from Yamazumi import Yamazumi
-
+from JES import Jes
 
 
 filePath = None
@@ -135,13 +135,19 @@ class MyApp(QMainWindow):
 
         elif self.ui.comboBox.currentText() == "Yamazumi Creator":
             if self.filePathChecker() == True:
-                print("HERE")
                 log.append("Создание документа...")
                 self.logger(log)
                 result = Yamazumi(filePath, savePath)
                 self.threadpool.start(result)
                 result.signals.finished.connect(lambda: (log.append("\nСоздан файл: Yamazumi цеха.xlsx"), self.logger(log)))
     
+        elif self.ui.comboBox.currentText() == "JES Creator":
+            if self.filePathChecker() == True:
+                log.append("Создание документа...")
+                self.logger(log)
+                result = Jes(filePath, savePath)
+                self.threadpool.start(result)
+                result.signals.finished.connect(lambda: (log.append("\nСоздан файл: Jes.xlsx"), self.logger(log)))
 
 
 if __name__ == "__main__":
