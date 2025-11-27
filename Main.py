@@ -1,14 +1,12 @@
 
 from pathlib import Path
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from ui import Ui_MainWindow  # импорт сгенерированного интерфейса
-from PyQt5.QtWidgets import QFileDialog
 from SWCT import Text
-from PyQt5.QtCore import QRunnable, QThreadPool, QTimer, pyqtSlot
+from PySide6.QtCore import QRunnable, QThreadPool, QTimer, Slot
 from Yamazumi import Yamazumi
 from JES import Jes
-
 
 filePath = None
 savePath = None
@@ -84,7 +82,7 @@ class MyApp(QMainWindow):
         
         else:
             global filePath
-            curFilePath, _ = QFileDialog.getOpenFileName(self,"Выберите файл","",";Текстовые (*.xlsm);")
+            curFilePath, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовые (*.xlsm)")
             if len(curFilePath) > 0:
                 dir = Path(curFilePath)
                 filePath = curFilePath
@@ -96,7 +94,7 @@ class MyApp(QMainWindow):
 
     def openFileDialog2(self):
         global savePath
-        curFilePath = QFileDialog.getExistingDirectory(parent=None, caption="Выберите папку", directory="/home/user")
+        curFilePath = QFileDialog.getExistingDirectory(None, "Выберите папку", "/home/user")
         if len(curFilePath) > 2:
             savePath = curFilePath
             # print((savePath))
