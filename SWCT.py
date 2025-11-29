@@ -1,17 +1,16 @@
-
 from openpyxl import load_workbook
 from pathlib import Path
 import re
 import math
 from openpyxl.utils import get_column_letter, column_index_from_string
 
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     QObject,
     QRunnable,
     QThreadPool,
     QTimer,
-    pyqtSignal,
-    pyqtSlot,
+    Signal,
+    Slot,
 )
 
 class WorkerSignals(QObject):
@@ -30,10 +29,10 @@ class WorkerSignals(QObject):
         float indicating % progress
     """
 
-    finished = pyqtSignal()
-    error = pyqtSignal(tuple)
-    result = pyqtSignal(str)
-    progress = pyqtSignal(str)
+    finished = Signal()
+    error = Signal(tuple)
+    result = Signal(str)
+    progress = Signal(str)
 
 
 class Text(QRunnable):
@@ -89,7 +88,7 @@ class Text(QRunnable):
         return self.row
     
 
-    @pyqtSlot()
+    @Slot()
     def run(self):
 
         XL_PATH_IN = "SWCTmacross.xlsm"

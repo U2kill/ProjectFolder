@@ -5,26 +5,28 @@
 from openpyxl import load_workbook
 from pathlib import Path
 
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     QObject,
     QRunnable,
     QThreadPool,
     QTimer,
-    pyqtSignal,
-    pyqtSlot,
+    Signal,
+    Slot,
 )
-
 class WorkerSignals(QObject):
-    finished = pyqtSignal()
+
+    finished = Signal()
     
 
 
 class Yamazumi(QRunnable):
+
     def __init__(self, filePath, savePath):
         super().__init__()
         self.filePath = filePath
         self.savePath = savePath
         self.signals = WorkerSignals()
+
 
     def createOperationsList(self, sheet):
         num = 9
@@ -83,7 +85,7 @@ class Yamazumi(QRunnable):
                 sheet.cell(row = number, column = siteCol[i.get('Участок')][2], value = i.get('Потери'))
                 number += 1
     
-    @pyqtSlot()    
+    @Slot()    
     def run(self):
 
         templateWorkshop = Path("Yamazumi.xlsx")

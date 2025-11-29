@@ -5,19 +5,19 @@ from pathlib import Path
 from functools import reduce
 import os
 from datetime import date
-from PyQt5.QtCore import (
+from PySide6.QtCore import (
     QObject,
     QRunnable,
     QThreadPool,
     QTimer,
-    pyqtSignal,
-    pyqtSlot,
+    Signal,
+    Slot,
 )
 
 
 class WorkerSignals(QObject):
     
-    finished = pyqtSignal()
+    finished = Signal()
 
 
 
@@ -279,7 +279,7 @@ class Jes(QRunnable):
 
                 sheet[f"BG{num}"] = Time
 
-    @pyqtSlot()
+    @Slot()
     def run(self):
 
         sheet = self.activeWb["SWCT"]
