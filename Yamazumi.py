@@ -14,16 +14,19 @@ from PySide6.QtCore import (
     Slot,
 )
 class WorkerSignals(QObject):
+
     finished = Signal()
     
 
 
 class Yamazumi(QRunnable):
+
     def __init__(self, filePath, savePath):
         super().__init__()
         self.filePath = filePath
         self.savePath = savePath
         self.signals = WorkerSignals()
+
 
     def createOperationsList(self, sheet):
         num = 9
