@@ -9,8 +9,8 @@ from Yamazumi import Yamazumi
 from JES import Jes
 from typing import Union, List
 import inspect
-from typing import Annotated
 
+#python -m PyInstaller --onefile --windowed --add-data "JES.xlsx;." --add-data "Yamazumi.xlsx;." --add-data "SWCTmacross.xlsm;." Main.py
 
 class MyApp(QMainWindow):
 
@@ -73,7 +73,7 @@ class MyApp(QMainWindow):
         if self.ui.comboBox.currentText() == "SWCT Creator":
             if self.appStat.nameChecker() == True and self.appStat.filePathChecker(self.textPath, self.savePath) == True:
                 self.longTask.createSWCT(self.textPath, self.savePath, self.SWCTname)
-                self.longTask.createSWCT()            
+        
 
         elif self.ui.comboBox.currentText() == "Yamazumi Creator":
             if self.appStat.filePathChecker(self.filePath, self.savePath) == True:
@@ -162,8 +162,10 @@ class ChangeUi:
     
     def blockStartButton(self, value: bool):
          if value == True:
+            print("DSA")
             self.ui.pushButton_3.setEnabled(False)
-         if value == False:
+
+         elif value == False:
             self.ui.pushButton_3.setEnabled(True)
 
 class Logger:
@@ -188,6 +190,7 @@ class LongTask:
         self.threadpool = QThreadPool()
         self.changeUi = changeUi
 
+
     def createSWCT(self, textPath: List[str], savePath: str, SWCTname: str):
         result = Text(textPath, SWCTname, savePath)
         self.log.addLog("Создание документа...")
@@ -195,8 +198,9 @@ class LongTask:
         self.threadpool.start(result)
         self.changeUi.blockStartButton(True)
         result.signals.progress.connect(lambda txt:(self.log.addLog(f"{txt}")))
-        result.signals.finished.connect(lambda: (self.log.addLog(f"\nСоздан файл: {SWCTname}")))
-        self.changeUi.blockStartButton(False)
+        result.signals.finished.connect(lambda: (self.log.addLog(f"\nСоздан файл: {SWCTname}"),
+                                         self.changeUi.blockStartButton(False)))
+        
 
     def createYamazumi(self, filePath: str, savePath: str):
         self.log.addLog("Создание документа...")
@@ -204,8 +208,9 @@ class LongTask:
         self.threadpool.setMaxThreadCount(1)
         self.threadpool.start(result)
         self.changeUi.blockStartButton(True)
-        result.signals.finished.connect(lambda: (self.log.addLog("\nСоздан файл: Yamazumi цеха.xlsx")))
-        self.changeUi.blockStartButton(False)
+        result.signals.finished.connect(lambda: (self.log.addLog("\nСоздан файл: Yamazumi цеха.xlsx"),
+                                                 self.changeUi.blockStartButton(False)))
+        
     
     def createJes(self, filePath: str, savePath: str):
         self.log.addLog("Создание документа...")
@@ -213,8 +218,9 @@ class LongTask:
         self.threadpool.setMaxThreadCount(1)
         self.threadpool.start(result)
         self.changeUi.blockStartButton(True)
-        result.signals.finished.connect(lambda: (self.log.addLog("\nСоздан файл: Jes.xlsx")))
-        self.changeUi.blockStartButton(False)
+        result.signals.finished.connect(lambda: (self.log.addLog("\nСоздан файл: Jes.xlsx"),
+                                                 self.changeUi.blockStartButton(False)))
+        
 
 
 
