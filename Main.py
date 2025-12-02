@@ -9,8 +9,9 @@ from Yamazumi import Yamazumi
 from JES import Jes
 from typing import Union, List
 import inspect
+from PySide6.QtGui import QIcon
 
-#python -m PyInstaller --onefile --windowed --add-data "JES.xlsx;." --add-data "Yamazumi.xlsx;." --add-data "SWCTmacross.xlsm;." Main.py
+#python -m PyInstaller --icon="D:\\Users\\aageev\\Projects\\ProjectFolder\\icons\\icon.ico" --name "PSDD Toolbox" --onefile --windowed --add-data "JES.xlsx;." --add-data "Yamazumi.xlsx;." --add-data "SWCTmacross.xlsm;." Main.py
 
 class MyApp(QMainWindow):
 
@@ -19,7 +20,9 @@ class MyApp(QMainWindow):
         self.savePath = None
         self.filePath = None
         self.textPath = None
-        self.operation = "SWCT creator"
+        
+        self.setWindowTitle("PSDD Toolbox")
+        self.setWindowIcon(QIcon(r"D:\\Users\\aageev\\Projects\\ProjectFolder\\icons\\icon.ico"))
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -227,6 +230,7 @@ class LongTask:
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyApp()
+    window.setWindowTitle("PSDD Toolbox")
     window.show()
     app.exec()
 
