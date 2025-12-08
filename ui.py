@@ -80,6 +80,7 @@ class Ui_MainWindow(object):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("")
         self.gridLayout.addWidget(self.comboBox, 0, 1, 1, 1)
         self.lineEdit = QtWidgets.QLineEdit(self.tab)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
@@ -153,8 +154,11 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(0, _translate("MainWindow", "SWCT Creator"))
         self.comboBox.setItemText(1, _translate("MainWindow", "Yamazumi Creator"))
         self.comboBox.setItemText(2, _translate("MainWindow", "JES Creator"))
+
+        self.comboBox.setItemText(3, _translate("MainWindow", "MOV to mp4"))
+
         self.lineEdit.setPlaceholderText(_translate("MainWindow", "Example: LINE ILF30-1,5W40-30H-150(10P02)"))
-        self.pushButton_3.setText(_translate("MainWindow", "Create and save document"))
+        self.pushButton_3.setText(_translate("MainWindow", "Create and save"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))

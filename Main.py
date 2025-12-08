@@ -10,7 +10,7 @@ from JES import Jes
 from typing import Union, List
 import inspect
 from PySide6.QtGui import QIcon
-
+from movToMp4 import Converter
 #python -m PyInstaller --icon="D:\\Users\\aageev\\Projects\\ProjectFolder\\icons\\icon.ico" --name "PSDD Toolbox" --onefile --windowed --add-data "JES.xlsx;." --add-data "Yamazumi.xlsx;." --add-data "SWCTmacross.xlsm;." Main.py
 
 class MyApp(QMainWindow):
@@ -20,6 +20,7 @@ class MyApp(QMainWindow):
         self.savePath = None
         self.filePath = None
         self.textPath = None
+        self.movPath = None
         
         self.setWindowTitle("PSDD Toolbox")
         self.setWindowIcon(QIcon(r"D:\\Users\\aageev\\Projects\\ProjectFolder\\icons\\icon.ico"))
@@ -29,9 +30,7 @@ class MyApp(QMainWindow):
         self.log = Logger(self.ui)
         self.appStat = AppStat(self.ui, self.log)
         self.changeUI = ChangeUi(self.ui)
-        self.longTask = LongTask(self.appStat, self.log, self.changeUI)
-        
-       
+        self.longTask = LongTask(self.appStat, self.log, self.changeUI)      
 
         self.ui.comboBox.currentTextChanged.connect(self.changeUI.comboBoxFunc)
         self.ui.pushButton.clicked.connect(self.openFileDialog)
@@ -49,12 +48,20 @@ class MyApp(QMainWindow):
                 self.ui.pushButton.setText(f"{Path(curFilePath[0]).parent}")
                 self.log.addLog(f"Добавлены файлы: \n{"\n".join(curFilePath)}")
         
-        else:
+        elif self.ui.comboBox.currentText() == "Yamazumi Creator" or self.ui.comboBox.currentText() == "JES Creator":
             curFilePath, _ = QFileDialog.getOpenFileName(self, "Выберите файл", "", "Текстовые (*.xlsm)")
             if len(curFilePath) > 0:
                 self.filePath = self.appStat.status(curFilePath)
                 self.ui.pushButton.setText(Path(curFilePath).stem)
                 self.log.addLog(f"Добавлен файл SWCT: \n{curFilePath}")
+
+        elif self.ui.comboBox.currentText() == "MOV to mp4":
+            curFilePath, _ = QFileDialog.getOpenFileNames(self,"Выберите файл","",";Видео (*.mov);")
+            if len(curFilePath) > 0:
+                self.movPath = curFilePath
+                print(curFilePath)
+                self.ui.pushButton.setText(f"{Path(curFilePath[0]).parent}")
+                self.log.addLog(f"Добавлены файлы: \n{"\n".join(curFilePath)}")
 
 
     def openSaveFileDialog(self):
@@ -86,6 +93,10 @@ class MyApp(QMainWindow):
             if self.appStat.filePathChecker(self.filePath, self.savePath) == True:
                 self.longTask.createJes(self.filePath, self.savePath)
 
+        elif self.ui.comboBox.currentText() == "MOV to mp4":
+            print(self.movPath)
+            if self.appStat.filePathChecker(self.movPath, self.savePath) == True:
+                self.longTask.convertMovToMp4(self.movPath, self.savePath)
 
 
 class AppStat:
@@ -137,6 +148,8 @@ class AppStat:
                     return False
             return True
         except TypeError:
+            for i in paths:
+                print(type(i))
             QApplication.beep()
             self.log.addLog("Ошибка: Не выбраны все пути файлов")
 
@@ -156,10 +169,16 @@ class ChangeUi:
             self.ui.label_2.setText("Text files path:")
             self.ui.lineEdit.show()
          
-        else:
+        elif self.ui.comboBox.currentText() == "Yamazumi Creator" or self.ui.comboBox.currentText() == "JES Creator":
             self.ui.pushButton.setText("Select SWCT")
             self.ui.label_2.setText("SWCT file path:")
             self.ui.lineEdit.hide()
+
+        elif self.ui.comboBox.currentText() == "MOV to mp4":
+            self.ui.pushButton.setText("Select MOV")
+            self.ui.label_2.setText("MOV files path:")
+            self.ui.lineEdit.hide()            
+
         self.operation = text
         return self.operation
     
@@ -224,8 +243,15 @@ class LongTask:
         result.signals.finished.connect(lambda: (self.log.addLog("\nСоздан файл: Jes.xlsx"),
                                                  self.changeUi.blockStartButton(False)))
         
-
-
+    def convertMovToMp4(self, movPaths: List[str], savePath: str):
+        self.log.addLog("Начало конвертации файла(ов)...")
+        result = Converter(movPaths, savePath)
+        self.threadpool.setMaxThreadCount(1)
+        self.threadpool.start(result)
+        self.changeUi.blockStartButton(True)
+        result.signals.progress.connect(lambda message: self.log.addLog(message))
+        result.signals.finished.connect(lambda: (self.log.addLog("\nСоздан файл: Jes.xlsx"),
+                                                 self.changeUi.blockStartButton(False)))
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
