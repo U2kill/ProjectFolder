@@ -106,7 +106,6 @@ class Converter(QRunnable):
         cv2.destroyAllWindows()
         
         self.signals.progress.emit(f"Конвертация завершена!")
-        # self.signals.progress.emit(f"Обработано кадров: {frame_count}")
         
         # Проверяем размер файла
         if os.path.exists(output_path):
