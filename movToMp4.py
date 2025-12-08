@@ -117,6 +117,6 @@ class Converter(QRunnable):
     @Slot()
     def run(self):
         for i in self.movPaths:
-            self.convert_mov_to_mp4_opencv_basic(i, self.savePath)
-        
+            self.convert_mov_to_mp4_opencv_basic(i, self.savePath)    
+        # print("DESDSdASDAS")   
         self.signals.finished.emit()

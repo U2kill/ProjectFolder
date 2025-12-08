@@ -11,6 +11,7 @@ from typing import Union, List
 import inspect
 from PySide6.QtGui import QIcon
 from movToMp4 import Converter
+from PySide6.QtGui import QTextCursor
 #python -m PyInstaller --icon="D:\\Users\\aageev\\Projects\\ProjectFolder\\icons\\icon.ico" --name "PSDD Toolbox" --onefile --windowed --add-data "JES.xlsx;." --add-data "Yamazumi.xlsx;." --add-data "SWCTmacross.xlsm;." Main.py
 
 class MyApp(QMainWindow):
@@ -59,7 +60,6 @@ class MyApp(QMainWindow):
             curFilePath, _ = QFileDialog.getOpenFileNames(self,"Выберите файл","",";Видео (*.mov);")
             if len(curFilePath) > 0:
                 self.movPath = curFilePath
-                print(curFilePath)
                 self.ui.pushButton.setText(f"{Path(curFilePath[0]).parent}")
                 self.log.addLog(f"Добавлены файлы: \n{"\n".join(curFilePath)}")
 
@@ -94,7 +94,6 @@ class MyApp(QMainWindow):
                 self.longTask.createJes(self.filePath, self.savePath)
 
         elif self.ui.comboBox.currentText() == "MOV to mp4":
-            print(self.movPath)
             if self.appStat.filePathChecker(self.movPath, self.savePath) == True:
                 self.longTask.convertMovToMp4(self.movPath, self.savePath)
 
@@ -148,8 +147,6 @@ class AppStat:
                     return False
             return True
         except TypeError:
-            for i in paths:
-                print(type(i))
             QApplication.beep()
             self.log.addLog("Ошибка: Не выбраны все пути файлов")
 
@@ -184,10 +181,10 @@ class ChangeUi:
     
     def blockStartButton(self, value: bool):
          if value == True:
-            print("DSA")
             self.ui.pushButton_3.setEnabled(False)
 
          elif value == False:
+            print("312312")
             self.ui.pushButton_3.setEnabled(True)
 
 class Logger:
@@ -204,6 +201,8 @@ class Logger:
 
         self.uiLog = "\n".join(self.logger)
         self.ui.textEdit.setText(self.uiLog)
+        scrollbar = self.ui.textEdit.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
 
 class LongTask:
     def __init__(self, stat, log, changeUi):
@@ -250,8 +249,8 @@ class LongTask:
         self.threadpool.start(result)
         self.changeUi.blockStartButton(True)
         result.signals.progress.connect(lambda message: self.log.addLog(message))
-        result.signals.finished.connect(lambda: (self.log.addLog("\nСоздан файл: Jes.xlsx"),
-                                                 self.changeUi.blockStartButton(False)))
+        result.signals.finished.connect(lambda: self.changeUi.blockStartButton(False))
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
